@@ -8,7 +8,7 @@
 import Config
 
 config :reel,
-  ecto_repos: [Reel.Repo]
+  ecto_repos: [Reel.Repo, ReelSync.Repo]
 
 # Configures the endpoint
 config :reel, ReelWeb.Endpoint,
@@ -47,7 +47,11 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :reel, :tmdb, api_key: System.get_env("TMDB_API_KEY") || raise("TMDB_API_KEY not found")
+config :reel,
+  migrate_db_on_boot: false
+
+config :reel,
+  create_db_on_boot: false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

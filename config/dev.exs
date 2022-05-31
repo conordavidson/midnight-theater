@@ -2,9 +2,20 @@ import Config
 
 # Configure your database
 config :reel, Reel.Repo,
-  database: Path.expand("../reel_dev.db", Path.dirname(__ENV__.file)),
+  database: Path.expand("../data/reel.db", Path.dirname(__ENV__.file)),
   pool_size: 5,
-  show_sensitive_data_on_connection_error: true
+  show_sensitive_data_on_connection_error: true,
+  migration_primary_key: [name: :id, type: :uuid],
+  migration_foreign_key: [column: :id, type: :uuid],
+  priv: "priv/repo"
+
+config :reel, ReelSync.Repo,
+  database: Path.expand("../data/reel_sync.db", Path.dirname(__ENV__.file)),
+  pool_size: 5,
+  show_sensitive_data_on_connection_error: true,
+  migration_primary_key: [name: :id, type: :uuid],
+  migration_foreign_key: [column: :id, type: :uuid],
+  priv: "priv/sync_repo"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
