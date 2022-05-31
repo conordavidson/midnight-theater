@@ -1,4 +1,4 @@
-defmodule Reel.Schemas.Import do
+defmodule ReelSync.Schemas.Import do
   use Reel.Schema
 
   schema "imports" do

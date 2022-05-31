@@ -1,4 +1,4 @@
-defmodule Reel.Repo.Migrations.CreateMovies do
+defmodule ReelSync.Repo.Migrations.CreateMovies do
   use Ecto.Migration
 
   def change do
@@ -9,7 +9,7 @@ defmodule Reel.Repo.Migrations.CreateMovies do
       add :popularity, :float, null: false
       add :release_date, :date
       add :title, :string, null: false
-      add :video_id, references(:videos)
+      add :data, :json, null: false
       timestamps()
     end
 

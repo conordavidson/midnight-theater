@@ -1,4 +1,4 @@
-defmodule Reel.Schemas.Video do
+defmodule ReelSync.Schemas.Video do
   use Reel.Schema
 
   schema "videos" do
@@ -10,8 +10,9 @@ defmodule Reel.Schemas.Video do
     field :type, :string
     field :official, :boolean
     field :published_at, :utc_datetime
+    field :data, :map
 
-    has_one :movie, Reel.Schemas.Movie
+    belongs_to :movie, ReelSync.Schemas.Movie
 
     timestamps()
   end

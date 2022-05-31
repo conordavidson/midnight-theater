@@ -8,9 +8,9 @@ defmodule Reel.Schemas.Movie do
     field :popularity, :float
     field :release_date, :date
     field :title, :string
-    field :data, :map
 
-    has_many :videos, Reel.Schemas.Video
+    belongs_to :video, Reel.Schemas.Video
+    many_to_many :genres, Reel.Schemas.Genre, join_through: Reel.Schemas.MovieGenre
 
     timestamps()
   end
