@@ -7,6 +7,9 @@ defmodule ReelWeb.Router do
 
   scope "/api", ReelWeb do
     pipe_through :api
+
+    resources "/movies", MoviesController, only: [:index]
+    resources "/genres", GenresController, only: [:index]
   end
 
   # Enables LiveDashboard only for development
