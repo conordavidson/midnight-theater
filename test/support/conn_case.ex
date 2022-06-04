@@ -26,6 +26,8 @@ defmodule ReelWeb.ConnCase do
 
       alias ReelWeb.Router.Helpers, as: Routes
 
+      use ExUnit.Case, async: true
+
       # The default endpoint for testing
       @endpoint ReelWeb.Endpoint
     end
