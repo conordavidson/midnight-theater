@@ -1,0 +1,55 @@
+name: CI
+on: push
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-elixir@v1
+        with:
+          otp-version: 24.3.3
+          elixir-version: 1.12
+      - uses: actions/cache@v1
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-x
+      - name: Retrieve Mix Build Cache
+        uses: actions/cache@v1
+        id: mix-build-cache # ID to use in retrieve action
+        with:
+          path: _build/test/lib
+          key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-build-${{ github.event.pull_request.base.sha }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-build-${{ github.event.pull_request.base.sha }}-
+            ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-build-
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix deps.compile
+
+      - name: Compile
+        id: compile
+        run: mix compile --warnings-as-errors
+
+      - name: Test
+        id: test
+        run: mix test --warnings-as-errors
+
+      - name: Format
+        id: format
+        run: mix format --check-formatted
+
+      - name: Credo
+        id: credo
+        run: mix credo
+
+      - name: Sobelow
+        id: sobelow
+        run: mix sobelow --config --exit

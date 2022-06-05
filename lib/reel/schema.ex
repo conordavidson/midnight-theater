@@ -1,4 +1,8 @@
 defmodule Reel.Schema do
+  @moduledoc """
+  Base Schema. It sets UUIDs as default ID type.
+  """
+
   defmacro __using__(_) do
     quote do
       use Ecto.Schema

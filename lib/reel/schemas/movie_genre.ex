@@ -1,4 +1,6 @@
 defmodule Reel.Schemas.MovieGenre do
+  @moduledoc false
+
   use Reel.Schema
 
   schema "movies_genres" do

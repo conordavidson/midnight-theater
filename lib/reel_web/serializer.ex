@@ -1,4 +1,7 @@
 defmodule ReelWeb.Serializer do
+  @moduledoc """
+  Serializes structs to JSON.
+  """
   def genre(%Reel.Schemas.Genre{
         id: id,
         tmdb_id: tmdb_id,

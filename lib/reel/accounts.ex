@@ -1,4 +1,7 @@
 defmodule Reel.Accounts do
+  @moduledoc """
+  This module houses account logic.
+  """
   import Ecto.Query
 
   def trigger_login!(email) do

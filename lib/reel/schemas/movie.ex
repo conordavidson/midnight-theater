@@ -1,4 +1,6 @@
 defmodule Reel.Schemas.Movie do
+  @moduledoc false
+
   use Reel.Schema
 
   schema "movies" do

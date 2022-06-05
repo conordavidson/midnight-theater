@@ -1,4 +1,8 @@
 defmodule ReelWeb.Emails do
+  @moduledoc """
+  Responsible for building common emails.
+  """
+
   import Swoosh.Email
 
   def login_email(account = %Reel.Schemas.Account{}) do

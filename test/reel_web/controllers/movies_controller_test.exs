@@ -3,7 +3,7 @@ defmodule ReelWeb.MoviesControllerTest do
 
   def genre_attrs do
     %{
-      tmdb_id: Enum.random(1..99999),
+      tmdb_id: Enum.random(1..99_999),
       name: Faker.Lorem.word()
     }
   end
@@ -12,11 +12,11 @@ defmodule ReelWeb.MoviesControllerTest do
     {:ok, datetime, _} = DateTime.from_iso8601("1960-01-01T00:00:00.000Z")
 
     %{
-      tmdb_id: Enum.random(1..99999) |> Integer.to_string(),
+      tmdb_id: Enum.random(1..99_999) |> Integer.to_string(),
       name: Faker.Lorem.words(3) |> Enum.join(" "),
-      key: Enum.random(1..99999) |> Integer.to_string(),
+      key: Enum.random(1..99_999) |> Integer.to_string(),
       site: Enum.random(["vimeo", "youtube"]),
-      size: Enum.random(1..99999),
+      size: Enum.random(1..99_999),
       type: "Trailer",
       official: true,
       published_at:
@@ -27,8 +27,8 @@ defmodule ReelWeb.MoviesControllerTest do
 
   def movie_attrs do
     %{
-      tmdb_id: Enum.random(1..99999),
-      imdb_id: Enum.random(1..99999) |> Integer.to_string(),
+      tmdb_id: Enum.random(1..99_999),
+      imdb_id: Enum.random(1..99_999) |> Integer.to_string(),
       overview: Faker.Lorem.paragraph(1..3),
       popularity: (:rand.uniform() * 10) |> Float.round(1),
       release_date: Faker.Date.between(Date.from_iso8601!("1960-01-01"), Date.utc_today()),
@@ -62,7 +62,7 @@ defmodule ReelWeb.MoviesControllerTest do
     selected_genres = Enum.take_random(genres, 2)
 
     selected_genres
-    |> Enum.map(fn genre ->
+    |> Enum.each(fn genre ->
       %Reel.Schemas.MovieGenre{
         movie_id: movie.id,
         genre_id: genre.id
@@ -115,7 +115,7 @@ defmodule ReelWeb.MoviesControllerTest do
         |> json_response(200)
         |> Map.get("movies")
 
-      assert length(movies) == 0
+      assert Enum.empty?(movies)
     end
 
     test "works with era filter", %{conn: conn} do

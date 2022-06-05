@@ -1,4 +1,9 @@
 defmodule ReelSync.Downloader do
+  @moduledoc """
+  This module is responsible for iterating through the
+  TMDB file export and downloading data from the TMDB
+  database to our reel_sync.db
+  """
   import Ecto.Query
 
   def run do
@@ -37,7 +42,7 @@ defmodule ReelSync.Downloader do
       end)
 
     Task.await_many(tasks)
-    |> Enum.map(fn
+    |> Enum.each(fn
       movie = %{"id" => _id} ->
         handle_movie_response!(movie)
 
@@ -195,6 +200,8 @@ defmodule ReelSync.Downloader do
   end
 
   defmodule Tmdb do
+    @moduledoc false
+
     def base_url do
       "https://api.themoviedb.org/3"
     end
@@ -204,6 +211,8 @@ defmodule ReelSync.Downloader do
     end
 
     defmodule Movies do
+      @moduledoc false
+
       def get(movie_id) do
         HTTPoison.get(
           "#{Tmdb.base_url()}/movie/#{movie_id}?api_key=#{Tmdb.api_key()}&append_to_response=videos,images"

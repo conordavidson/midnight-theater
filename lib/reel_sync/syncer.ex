@@ -1,14 +1,25 @@
 defmodule ReelSync.Syncer do
+  @moduledoc """
+  This module is responsible for syncing data from
+  our reel_sync.db to the reel.db. The Reel DB is more
+  slimmed down - only includes movies with trailers and
+  one trailer video per movie. This cuts down our DB
+  size significantly, allowing us to host it for free.
+
+  It's the difference between a few GBs to ~80mbs.
+  """
   require Ecto.Query
 
+  # credo:disable-for-lines:160 Credo.Check.Refactor.CyclomaticComplexity
+  # credo:disable-for-lines:160 Credo.Check.Refactor.Nesting
   def run do
     ReelSync.Schemas.Genre
     |> ReelSync.Repo.all()
-    |> Enum.map(fn %{
-                     id: id,
-                     tmdb_id: tmdb_id,
-                     name: name
-                   } ->
+    |> Enum.each(fn %{
+                      id: id,
+                      tmdb_id: tmdb_id,
+                      name: name
+                    } ->
       case Reel.Repo.get(Reel.Schemas.Genre, id) do
         nil ->
           %Reel.Schemas.Genre{

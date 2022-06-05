@@ -69,7 +69,7 @@ defmodule ReelWeb.LoginsControllerTest do
         |> Reel.Repo.preload(:tokens)
         |> Map.get(:tokens)
 
-      assert length(tokens) == 0
+      assert Enum.empty?(tokens)
     end
 
     test "redirects to error_to if token is nil", %{conn: conn} do
@@ -101,7 +101,7 @@ defmodule ReelWeb.LoginsControllerTest do
         |> Reel.Repo.preload(:tokens)
         |> Map.get(:tokens)
 
-      assert length(tokens) == 0
+      assert Enum.empty?(tokens)
     end
 
     test "redirects to error_to if token is expired", %{conn: conn} do
@@ -137,7 +137,7 @@ defmodule ReelWeb.LoginsControllerTest do
         |> Reel.Repo.preload(:tokens)
         |> Map.get(:tokens)
 
-      assert length(tokens) == 0
+      assert Enum.empty?(tokens)
     end
   end
 
