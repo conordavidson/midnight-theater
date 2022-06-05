@@ -1,7 +1,145 @@
-defmodule ReelWeb.GenresControllerTest do
+defmodule ReelWeb.LoginsControllerTest do
   use ReelWeb.ConnCase
 
   import Swoosh.TestAssertions
+
+  describe "show login" do
+    test "creates token and redirects", %{conn: conn} do
+      ok_redirect = "test.com/ok"
+      err_redirect = "test.com/err"
+
+      account =
+        %Reel.Schemas.Account{
+          email: Faker.Internet.email(),
+          confirmation_token: Ecto.UUID.generate(),
+          confirmation_token_inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        }
+        |> Reel.Repo.insert!()
+
+      conn =
+        conn
+        |> get(
+          Routes.logins_path(conn, :show, account.confirmation_token, %{
+            ok_to: ok_redirect,
+            error_to: err_redirect
+          })
+        )
+
+      assert redirected_to(conn) =~ ok_redirect
+
+      account =
+        account
+        |> Reel.Repo.reload!()
+        |> Reel.Repo.preload(:tokens)
+
+      assert [%Reel.Schemas.Token{revoked_at: nil}] = account.tokens
+
+      assert %Reel.Schemas.Account{
+               confirmation_token: nil,
+               confirmation_token_inserted_at: nil
+             } = account
+    end
+
+    test "redirects to error_to if token doesn't exist", %{conn: conn} do
+      ok_redirect = "test.com/ok"
+      err_redirect = "test.com/err"
+
+      account =
+        %Reel.Schemas.Account{
+          email: Faker.Internet.email(),
+          confirmation_token: Ecto.UUID.generate(),
+          confirmation_token_inserted_at: nil
+        }
+        |> Reel.Repo.insert!()
+
+      conn =
+        conn
+        |> get(
+          Routes.logins_path(conn, :show, Ecto.UUID.generate(), %{
+            ok_to: ok_redirect,
+            error_to: err_redirect
+          })
+        )
+
+      assert redirected_to(conn) =~ err_redirect
+
+      tokens =
+        account
+        |> Reel.Repo.reload!()
+        |> Reel.Repo.preload(:tokens)
+        |> Map.get(:tokens)
+
+      assert length(tokens) == 0
+    end
+
+    test "redirects to error_to if token is nil", %{conn: conn} do
+      ok_redirect = "test.com/ok"
+      err_redirect = "test.com/err"
+
+      account =
+        %Reel.Schemas.Account{
+          email: Faker.Internet.email(),
+          confirmation_token: nil,
+          confirmation_token_inserted_at: nil
+        }
+        |> Reel.Repo.insert!()
+
+      conn =
+        conn
+        |> get(
+          Routes.logins_path(conn, :show, Ecto.UUID.generate(), %{
+            ok_to: ok_redirect,
+            error_to: err_redirect
+          })
+        )
+
+      assert redirected_to(conn) =~ err_redirect
+
+      tokens =
+        account
+        |> Reel.Repo.reload!()
+        |> Reel.Repo.preload(:tokens)
+        |> Map.get(:tokens)
+
+      assert length(tokens) == 0
+    end
+
+    test "redirects to error_to if token is expired", %{conn: conn} do
+      ok_redirect = "test.com/ok"
+      err_redirect = "test.com/err"
+
+      inserted_at =
+        DateTime.utc_now()
+        |> DateTime.add((Reel.Accounts.token_ttl_seconds() + 1) * -1, :second)
+
+      account =
+        %Reel.Schemas.Account{
+          email: Faker.Internet.email(),
+          confirmation_token: Ecto.UUID.generate(),
+          confirmation_token_inserted_at: inserted_at |> DateTime.truncate(:second)
+        }
+        |> Reel.Repo.insert!()
+
+      conn =
+        conn
+        |> get(
+          Routes.logins_path(conn, :show, account.confirmation_token, %{
+            ok_to: ok_redirect,
+            error_to: err_redirect
+          })
+        )
+
+      assert redirected_to(conn) =~ err_redirect
+
+      tokens =
+        account
+        |> Reel.Repo.reload!()
+        |> Reel.Repo.preload(:tokens)
+        |> Map.get(:tokens)
+
+      assert length(tokens) == 0
+    end
+  end
 
   describe "create login" do
     test "creates new account", %{conn: conn} do

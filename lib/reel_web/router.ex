@@ -2,6 +2,7 @@ defmodule ReelWeb.Router do
   use ReelWeb, :router
 
   pipeline :api do
+    plug :fetch_session
     plug :accepts, ["json"]
   end
 
@@ -10,7 +11,8 @@ defmodule ReelWeb.Router do
 
     resources "/movies", MoviesController, only: [:index]
     resources "/genres", GenresController, only: [:index]
-    resources "/logins", LoginsController, only: [:show, :create]
+    resources "/logins", LoginsController, only: [:show, :create], param: "confirmation_token"
+    resources "/logouts", LogoutsController, only: [:create]
   end
 
   # Enables LiveDashboard only for development
