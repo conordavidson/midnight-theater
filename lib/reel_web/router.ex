@@ -10,6 +10,7 @@ defmodule ReelWeb.Router do
 
     resources "/movies", MoviesController, only: [:index]
     resources "/genres", GenresController, only: [:index]
+    resources "/logins", LoginsController, only: [:show, :create]
   end
 
   # Enables LiveDashboard only for development
