@@ -4,7 +4,9 @@ defmodule ReelWeb.MoviesController do
   import Ecto.Query
 
   def index(conn, params) do
-    movies =
+    # We pluck IDs first. This reduces memory load
+    # significantly.
+    movie_ids =
       Reel.Schemas.Movie
       |> join(:inner, [movies], genres in assoc(movies, :genres))
       |> join(:inner, [movies, _], video in assoc(movies, :video))
@@ -13,8 +15,14 @@ defmodule ReelWeb.MoviesController do
       |> genre_filter(params)
       |> order_by(fragment("RANDOM()"))
       |> distinct(true)
-      |> preload([:genres, :video])
       |> limit(10)
+      |> select([movies], movies.id)
+      |> Reel.Repo.all()
+
+    movies =
+      Reel.Schemas.Movie
+      |> where([movies], movies.id in ^movie_ids)
+      |> preload([:genres, :video])
       |> Reel.Repo.all()
       |> Enum.map(&ReelWeb.Serializer.movie/1)
 
