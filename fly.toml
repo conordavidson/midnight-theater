@@ -8,6 +8,7 @@ processes = []
   PHX_HOST = "reel.fly.dev"
   PORT = "8080"
   DATABASE_PATH = "../../data/reel.db"
+  SYNC_DATABASE_PATH = "../../data/reel_sync.db"
 
 [mounts]
   source = "reel_data"

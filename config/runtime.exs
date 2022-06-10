@@ -22,12 +22,29 @@ if config_env() == :prod do
     System.get_env("DATABASE_PATH") ||
       raise """
       environment variable DATABASE_PATH is missing.
-      For example: /etc/reel/reel.db
+      For example: /data/reel.db
+      """
+
+  sync_database_path =
+    System.get_env("SYNC_DATABASE_PATH") ||
+      raise """
+      environment variable SYNC_DATABASE_PATH is missing.
+      For example: /data/reel_sync.db
       """
 
   config :reel, Reel.Repo,
     database: database_path,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5"),
+    migration_primary_key: [name: :id, type: :uuid],
+    migration_foreign_key: [column: :id, type: :uuid],
+    priv: "priv/repo"
+
+  config :reel, ReelSync.Repo,
+    database: sync_database_path,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5"),
+    migration_primary_key: [name: :id, type: :uuid],
+    migration_foreign_key: [column: :id, type: :uuid],
+    priv: "priv/sync_repo"
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

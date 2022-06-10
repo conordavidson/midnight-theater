@@ -8,7 +8,13 @@
 import Config
 
 config :reel,
-  ecto_repos: [Reel.Repo, ReelSync.Repo]
+  ecto_repos: [Reel.Repo]
+
+# Disable the ReelSync.Repo for now,
+# we don't need to hold connections
+# to this DB.
+# config :reel,
+#   ecto_repos: [Reel.Repo, ReelSync.Repo]
 
 # Configures the endpoint
 config :reel, ReelWeb.Endpoint,
