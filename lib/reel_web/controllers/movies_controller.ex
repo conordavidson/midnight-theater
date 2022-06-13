@@ -6,7 +6,7 @@ defmodule ReelWeb.MoviesController do
   def index(conn, params) do
     # We pluck IDs first. This reduces memory load
     # significantly.
-    movie_ids =
+    movies =
       Reel.Schemas.Movie
       |> join(:inner, [movies], genres in assoc(movies, :genres))
       |> join(:inner, [movies, _], video in assoc(movies, :video))
@@ -14,14 +14,8 @@ defmodule ReelWeb.MoviesController do
       |> release_date_max_filter(params)
       |> genre_filter(params)
       |> order_by(fragment("RANDOM()"))
-      |> distinct(true)
+      |> distinct(:id)
       |> limit(10)
-      |> select([movies], movies.id)
-      |> Reel.Repo.all()
-
-    movies =
-      Reel.Schemas.Movie
-      |> where([movies], movies.id in ^movie_ids)
       |> preload([:genres, :video])
       |> Reel.Repo.all()
       |> Enum.map(&ReelWeb.Serializer.movie/1)
@@ -33,14 +27,7 @@ defmodule ReelWeb.MoviesController do
     case Date.from_iso8601(min) do
       {:ok, parsed_min} ->
         query
-        |> where(
-          [movies],
-          fragment(
-            "CAST(strftime('%s', ?) AS integer) >= CAST(strftime('%s', ?) AS integer)",
-            movies.release_date,
-            ^parsed_min
-          )
-        )
+        |> where([movies], movies.release_date >= ^parsed_min)
 
       _ ->
         query
@@ -53,14 +40,7 @@ defmodule ReelWeb.MoviesController do
     case Date.from_iso8601(max) do
       {:ok, parsed_max} ->
         query
-        |> where(
-          [movies],
-          fragment(
-            "CAST(strftime('%s', ?) AS integer) <= CAST(strftime('%s', ?) AS integer)",
-            movies.release_date,
-            ^parsed_max
-          )
-        )
+        |> where([movies], movies.release_date <= ^parsed_max)
 
       _ ->
         query

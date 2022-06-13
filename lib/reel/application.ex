@@ -7,22 +7,9 @@ defmodule Reel.Application do
 
   @impl true
   def start(_type, _args) do
-    # We create databases on app boot if enabled for
-    # our config environment.
-    if Application.get_env(:reel, :create_db_on_boot, false) do
-      Reel.Release.create()
-    end
-
-    # We run migrations on app boot if enabled for
-    # our config environment.
-    if Application.get_env(:reel, :migrate_db_on_boot, false) do
-      Reel.Release.migrate()
-    end
-
     children = [
       # Start the Ecto repositories
       Reel.Repo,
-      ReelSync.Repo,
       # Start the Telemetry supervisor
       ReelWeb.Telemetry,
       # Start the PubSub system

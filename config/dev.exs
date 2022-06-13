@@ -1,21 +1,28 @@
 import Config
 
+config :reel,
+  ecto_repos: [Reel.Repo]
+
 # Configure your database
 config :reel, Reel.Repo,
-  database: Path.expand("../data/reel.db", Path.dirname(__ENV__.file)),
+  username: "postgres",
+  password: "postgres",
+  database: "reel_dev",
+  hostname: "localhost",
+  port: "5432",
   pool_size: 5,
   show_sensitive_data_on_connection_error: true,
   migration_primary_key: [name: :id, type: :uuid],
   migration_foreign_key: [column: :id, type: :uuid],
   priv: "priv/repo"
 
-config :reel, ReelSync.Repo,
-  database: Path.expand("../data/reel_sync.db", Path.dirname(__ENV__.file)),
-  pool_size: 5,
-  show_sensitive_data_on_connection_error: true,
-  migration_primary_key: [name: :id, type: :uuid],
-  migration_foreign_key: [column: :id, type: :uuid],
-  priv: "priv/sync_repo"
+# config :reel, ReelSync.Repo,
+#   database: "reelsync_dev",
+#   pool_size: 5,
+#   show_sensitive_data_on_connection_error: true,
+#   migration_primary_key: [name: :id, type: :uuid],
+#   migration_foreign_key: [column: :id, type: :uuid],
+#   priv: "priv/sync_repo"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

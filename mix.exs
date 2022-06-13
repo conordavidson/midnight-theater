@@ -36,7 +36,7 @@ defmodule Reel.MixProject do
       {:phoenix, "~> 1.6.6"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
-      {:ecto_sqlite3, ">= 0.0.0"},
+      {:postgrex, "~> 0.16.3"},
       {:phoenix_live_dashboard, "~> 0.5"},
       {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},

@@ -1,5 +1,8 @@
 import Config
 
+config :reel,
+  ecto_repos: [Reel.Repo]
+
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.
@@ -13,12 +16,6 @@ config :reel, ReelWeb.Endpoint, cache_static_manifest: "priv/static/cache_manife
 
 # Do not print debug messages in production
 config :logger, level: :info
-
-config :reel,
-  migrate_db_on_boot: false
-
-config :reel,
-  create_db_on_boot: false
 
 # ## SSL Support
 #
