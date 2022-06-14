@@ -5,6 +5,7 @@ defmodule ReelWeb.Router do
     plug :fetch_session
     plug :protect_from_forgery
     plug :accepts, ["json"]
+    plug ReelWeb.Authenticator
   end
 
   scope "/api", ReelWeb do

@@ -4,6 +4,21 @@ defmodule Reel.Accounts do
   """
   import Ecto.Query
 
+  def account_for_token_id(login_token_id) do
+    Reel.Schemas.Token
+    |> preload(:account)
+    |> where([token], token.id == ^login_token_id)
+    |> where([token], is_nil(token.revoked_at))
+    |> Reel.Repo.one()
+    |> case do
+      %Reel.Schemas.Token{account: account} ->
+        account
+
+      nil ->
+        nil
+    end
+  end
+
   def trigger_login!(email) do
     Reel.Schemas.Account
     |> Reel.Repo.get_by(email: email)

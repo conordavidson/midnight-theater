@@ -32,12 +32,20 @@ defmodule ReelWeb.LoginsControllerTest do
         |> Reel.Repo.reload!()
         |> Reel.Repo.preload(:tokens)
 
-      assert [%Reel.Schemas.Token{revoked_at: nil}] = account.tokens
+      assert [token = %Reel.Schemas.Token{revoked_at: nil}] = account.tokens
 
       assert %Reel.Schemas.Account{
                confirmation_token: nil,
                confirmation_token_inserted_at: nil
              } = account
+
+      assert Plug.Conn.get_session(conn, :login_token_id) == token.id
+
+      account_id = account.id
+      conn_with_account = ReelWeb.Authenticator.call(conn, [])
+
+      assert %{current_account: %Reel.Schemas.Account{id: ^account_id}} =
+               conn_with_account.assigns
     end
 
     test "redirects to error_to if token doesn't exist", %{conn: conn} do
