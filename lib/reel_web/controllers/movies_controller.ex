@@ -4,18 +4,20 @@ defmodule ReelWeb.MoviesController do
   import Ecto.Query
 
   def index(conn, params) do
-    # We pluck IDs first. This reduces memory load
-    # significantly.
-    movies =
+    # We pluck IDs first. This reduces query time
+    # with order_by(RANDOM()).
+    movies_subquery =
       Reel.Schemas.Movie
-      |> join(:inner, [movies], genres in assoc(movies, :genres))
-      |> join(:inner, [movies, _], video in assoc(movies, :video))
       |> release_date_min_filter(params)
       |> release_date_max_filter(params)
       |> genre_filter(params)
-      |> order_by(fragment("RANDOM()"))
-      |> distinct(:id)
+      |> order_by([movies], fragment("RANDOM()"))
       |> limit(10)
+      |> select([:id])
+
+    movies =
+      Reel.Schemas.Movie
+      |> where([movies], movies.id in subquery(movies_subquery))
       |> preload([:genres, :video])
       |> Reel.Repo.all()
       |> Enum.map(&ReelWeb.Serializer.movie/1)
@@ -51,7 +53,10 @@ defmodule ReelWeb.MoviesController do
 
   defp genre_filter(query, %{"genre_ids" => genre_ids}) do
     genre_ids_list = String.split(genre_ids, ",")
-    where(query, [_, genres], genres.id in ^genre_ids_list)
+
+    query
+    |> join(:left, [movies], genres in assoc(movies, :genres))
+    |> where([_, genres], genres.id in ^genre_ids_list)
   end
 
   defp genre_filter(query, _params), do: query
