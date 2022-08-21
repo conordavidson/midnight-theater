@@ -48,7 +48,8 @@ defmodule Reel.MixProject do
       {:httpoison, "~> 1.8"},
       {:faker, "~> 0.17", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.11.1", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.11.1", only: [:dev, :test], runtime: false},
+      {:corsica, "~> 1.2"}
     ]
   end
 

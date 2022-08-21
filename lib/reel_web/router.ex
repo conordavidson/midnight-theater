@@ -3,7 +3,6 @@ defmodule ReelWeb.Router do
 
   pipeline :api do
     plug :fetch_session
-    plug :protect_from_forgery
     plug :accepts, ["json"]
     plug ReelWeb.Authenticator
   end
