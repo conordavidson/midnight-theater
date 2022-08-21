@@ -1,9 +1,44 @@
 name: CI
 on: push
 jobs:
-  check:
-    name: Check
+  check-theater:
+    name: Check Theater
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './theater'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.13.0
+          cache: 'yarn'
+          cache-dependency-path: ./theater/yarn.lock
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Check Licensure
+        run: yarn run check-licensure
+
+      - name: Run Linter
+        run: yarn lint --max-warnings=0
+
+      - name: Run Test Suite
+        run: yarn run jest --ci
+
+      - name: Check Type Correctness
+        run: yarn run tsc --noEmit
+
+      - name: Check Formatting
+        run: yarn prettier --check .
+
+  check-reel:
+    name: Check Reel
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './reel'
     services:
       postgres:
         image: postgres:14
@@ -32,7 +67,7 @@ jobs:
             ${{ runner.os }}-mix-x
       - name: Retrieve Mix Build Cache
         uses: actions/cache@v1
-        id: mix-build-cache # ID to use in retrieve action
+        id: mix-build-cache
         with:
           path: _build/test/lib
           key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-build-${{ github.event.pull_request.base.sha }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
@@ -64,14 +99,51 @@ jobs:
         id: sobelow
         run: mix sobelow --config --exit
 
-  deploy-production:
-    name: Deploy Production
+  deploy-reel-production:
+    name: Deploy Reel
     if: github.ref == 'refs/heads/main'
-    needs: check
+    needs: [check-reel, check-theater]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './reel'
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  deploy-theater-preview:
+    name: Deploy Theater Preview
+    if: github.ref != 'refs/heads/main'
+    needs: [check-reel, check-theater]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './theater'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+  deploy-theater-production:
+    name: Deploy Theater Production
+    if: github.ref == 'refs/heads/main'
+    needs: [check-reel, check-theater]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-args: --prod
+          github-comment: false

@@ -1,4 +1,9 @@
 defmodule ReelWeb.Authenticator do
+  @moduledoc """
+  This assigns account info to the conn if a token is found
+  on the session.
+  """
+
   import Plug.Conn
 
   def init(default), do: default
