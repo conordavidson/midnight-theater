@@ -135,7 +135,7 @@ jobs:
   deploy-theater-production:
     name: Deploy Theater Production
     if: github.ref == 'refs/heads/main'
-    needs: [check-reel, check-theater]
+    needs: [check-reel, check-theater, deploy-reel-production]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
