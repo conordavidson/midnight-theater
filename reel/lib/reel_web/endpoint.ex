@@ -50,7 +50,8 @@ defmodule ReelWeb.Endpoint do
       ~r/^https:\/\/(.*\.)?midnight\.theater$/,
       ~r/^https:\/\/(.*\.)?vercel\.app$/
     ],
-    allow_headers: ["content-type", "accept"]
+    allow_headers: ["content-type", "accept", "x-csrf-token"],
+    allow_credentials: true
   )
 
   plug(Plug.MethodOverride)

@@ -2,19 +2,20 @@ defmodule ReelWeb.Router do
   use ReelWeb, :router
 
   pipeline :api do
-    plug :fetch_session
-    plug :protect_from_forgery
-    plug :accepts, ["json"]
-    plug ReelWeb.Authenticator
+    plug(:fetch_session)
+    plug(:protect_from_forgery)
+    plug(:accepts, ["json"])
+    plug(ReelWeb.Authenticator)
   end
 
   scope "/api", ReelWeb do
-    pipe_through :api
+    pipe_through(:api)
 
-    resources "/movies", MoviesController, only: [:index]
-    resources "/genres", GenresController, only: [:index]
-    resources "/logins", LoginsController, only: [:show, :create], param: "confirmation_token"
-    resources "/logouts", LogoutsController, only: [:create]
+    resources("/initializations", InitializationsController, only: [:index])
+    resources("/movies", MoviesController, only: [:index])
+    resources("/genres", GenresController, only: [:index])
+    resources("/logins", LoginsController, only: [:show, :create], param: "confirmation_token")
+    resources("/logouts", LogoutsController, only: [:create])
   end
 
   # Enables LiveDashboard only for development
@@ -28,8 +29,8 @@ defmodule ReelWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through [:fetch_session, :protect_from_forgery]
-      live_dashboard "/dashboard", metrics: ReelWeb.Telemetry
+      pipe_through([:fetch_session, :protect_from_forgery])
+      live_dashboard("/dashboard", metrics: ReelWeb.Telemetry)
     end
   end
 
@@ -39,9 +40,9 @@ defmodule ReelWeb.Router do
   # node running the Phoenix server.
   if Mix.env() == :dev do
     scope "/dev" do
-      pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through([:fetch_session, :protect_from_forgery])
 
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end
 end
