@@ -73,4 +73,8 @@ defmodule ReelWeb.Serializer do
       updated_at: updated_at
     }
   end
+
+  def account(%Reel.Schemas.Account{id: id, email: email}) do
+    %{id: id, email: email}
+  end
 end

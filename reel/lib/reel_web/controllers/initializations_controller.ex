@@ -1,6 +1,7 @@
 defmodule ReelWeb.InitializationsController do
   @moduledoc """
-  This endpoint exists to obtain a CSRF token.
+  This endpoint exists to obtain a CSRF token and the
+  current account, if one is logged in.
 
   The client will make a request here before making
   other requests, and we'll return a CSRF token.
@@ -9,6 +10,15 @@ defmodule ReelWeb.InitializationsController do
   use ReelWeb, :controller
 
   def index(conn, _params) do
-    json(conn, %{csrf_token: get_csrf_token()})
+    current_account =
+      case conn.assigns[:current_account] do
+        nil -> nil
+        account -> ReelWeb.Serializer.account(account)
+      end
+
+    json(conn, %{
+      csrf_token: get_csrf_token(),
+      current_account: current_account
+    })
   end
 end
