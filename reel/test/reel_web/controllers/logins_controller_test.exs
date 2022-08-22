@@ -5,9 +5,6 @@ defmodule ReelWeb.LoginsControllerTest do
 
   describe "show login" do
     test "creates token and redirects", %{conn: conn} do
-      ok_redirect = "test.com/ok"
-      err_redirect = "test.com/err"
-
       account =
         %Reel.Schemas.Account{
           email: Faker.Internet.email(),
@@ -18,14 +15,9 @@ defmodule ReelWeb.LoginsControllerTest do
 
       conn =
         conn
-        |> get(
-          Routes.logins_path(conn, :show, account.confirmation_token, %{
-            ok_to: ok_redirect,
-            error_to: err_redirect
-          })
-        )
+        |> get(Routes.logins_path(conn, :show, account.confirmation_token))
 
-      assert redirected_to(conn) =~ ok_redirect
+      assert redirected_to(conn) =~ Application.fetch_env!(:reel, :login_redirect_ok_url)
 
       account =
         account
@@ -49,9 +41,6 @@ defmodule ReelWeb.LoginsControllerTest do
     end
 
     test "redirects to error_to if token doesn't exist", %{conn: conn} do
-      ok_redirect = "test.com/ok"
-      err_redirect = "test.com/err"
-
       account =
         %Reel.Schemas.Account{
           email: Faker.Internet.email(),
@@ -62,14 +51,9 @@ defmodule ReelWeb.LoginsControllerTest do
 
       conn =
         conn
-        |> get(
-          Routes.logins_path(conn, :show, Ecto.UUID.generate(), %{
-            ok_to: ok_redirect,
-            error_to: err_redirect
-          })
-        )
+        |> get(Routes.logins_path(conn, :show, Ecto.UUID.generate()))
 
-      assert redirected_to(conn) =~ err_redirect
+      assert redirected_to(conn) =~ Application.fetch_env!(:reel, :login_redirect_err_url)
 
       tokens =
         account
@@ -80,10 +64,7 @@ defmodule ReelWeb.LoginsControllerTest do
       assert Enum.empty?(tokens)
     end
 
-    test "redirects to error_to if token is nil", %{conn: conn} do
-      ok_redirect = "test.com/ok"
-      err_redirect = "test.com/err"
-
+    test "redirects to err url if token is nil", %{conn: conn} do
       account =
         %Reel.Schemas.Account{
           email: Faker.Internet.email(),
@@ -94,14 +75,9 @@ defmodule ReelWeb.LoginsControllerTest do
 
       conn =
         conn
-        |> get(
-          Routes.logins_path(conn, :show, Ecto.UUID.generate(), %{
-            ok_to: ok_redirect,
-            error_to: err_redirect
-          })
-        )
+        |> get(Routes.logins_path(conn, :show, Ecto.UUID.generate()))
 
-      assert redirected_to(conn) =~ err_redirect
+      assert redirected_to(conn) =~ Application.fetch_env!(:reel, :login_redirect_err_url)
 
       tokens =
         account
@@ -112,10 +88,7 @@ defmodule ReelWeb.LoginsControllerTest do
       assert Enum.empty?(tokens)
     end
 
-    test "redirects to error_to if token is expired", %{conn: conn} do
-      ok_redirect = "test.com/ok"
-      err_redirect = "test.com/err"
-
+    test "redirects to error url if token is expired", %{conn: conn} do
       inserted_at =
         DateTime.utc_now()
         |> DateTime.add((Reel.Accounts.token_ttl_seconds() + 1) * -1, :second)
@@ -130,14 +103,9 @@ defmodule ReelWeb.LoginsControllerTest do
 
       conn =
         conn
-        |> get(
-          Routes.logins_path(conn, :show, account.confirmation_token, %{
-            ok_to: ok_redirect,
-            error_to: err_redirect
-          })
-        )
+        |> get(Routes.logins_path(conn, :show, account.confirmation_token))
 
-      assert redirected_to(conn) =~ err_redirect
+      assert redirected_to(conn) =~ Application.fetch_env!(:reel, :login_redirect_err_url)
 
       tokens =
         account

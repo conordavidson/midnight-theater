@@ -3,7 +3,7 @@ defmodule ReelWeb.MoviesControllerTest do
 
   def genre_attrs do
     %{
-      tmdb_id: Enum.random(1..99_999),
+      tmdb_id: Enum.random(1..9_999_999),
       name: Faker.Lorem.word()
     }
   end
@@ -12,7 +12,7 @@ defmodule ReelWeb.MoviesControllerTest do
     {:ok, datetime, _} = DateTime.from_iso8601("1960-01-01T00:00:00.000Z")
 
     %{
-      tmdb_id: Enum.random(1..99_999) |> Integer.to_string(),
+      tmdb_id: Enum.random(1..9_999_999) |> Integer.to_string(),
       name: Faker.Lorem.words(3) |> Enum.join(" "),
       key: Enum.random(1..99_999) |> Integer.to_string(),
       site: Enum.random(["vimeo", "youtube"]),
@@ -27,8 +27,8 @@ defmodule ReelWeb.MoviesControllerTest do
 
   def movie_attrs do
     %{
-      tmdb_id: Enum.random(1..99_999),
-      imdb_id: Enum.random(1..99_999) |> Integer.to_string(),
+      tmdb_id: Enum.random(1..9_999_999),
+      imdb_id: Enum.random(1..9_999_999) |> Integer.to_string(),
       overview: Faker.Lorem.paragraph(1..3),
       popularity: (:rand.uniform() * 10) |> Float.round(1),
       release_date: Faker.Date.between(Date.from_iso8601!("1960-01-01"), Date.utc_today()),

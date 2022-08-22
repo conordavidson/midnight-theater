@@ -15,19 +15,15 @@ defmodule ReelWeb.LoginsController do
     |> json(%{})
   end
 
-  def show(conn, %{
-        "confirmation_token" => confirmation_token,
-        "ok_to" => ok_to,
-        "error_to" => error_to
-      }) do
+  def show(conn, %{"confirmation_token" => confirmation_token}) do
     case Reel.Accounts.create_login_token(confirmation_token) do
       {:ok, token} ->
         conn
         |> put_session(:login_token_id, token.id)
-        |> redirect(external: ok_to)
+        |> redirect(external: Application.fetch_env!(:reel, :login_redirect_ok_url))
 
       {:error, _} ->
-        redirect(conn, external: error_to)
+        redirect(conn, external: Application.fetch_env!(:reel, :login_redirect_err_url))
     end
   end
 

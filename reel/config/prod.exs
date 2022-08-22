@@ -50,3 +50,7 @@ config :logger, level: :info
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
+
+config :reel,
+  login_redirect_ok_url: "https://midnight.theater?logged_in=true",
+  login_redirect_err_url: "http://midnight.theater?logged_in=false"
