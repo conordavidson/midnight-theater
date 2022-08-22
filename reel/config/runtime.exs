@@ -72,16 +72,30 @@ if config_env() == :prod do
   # Then you can assemble a release by calling `mix release`.
   # See `mix help release` for more information.
 
-  # ## Configuring the mailer
-  #
-  # In production you need to configure the mailer to use a different adapter.
-  # Also, you may need to configure the Swoosh API client of your choice if you
-  # are not using SMTP. Here is an example of the configuration:
-  #
-  #     config :reel, Reel.Mailer,
-  #       adapter: Swoosh.Adapters.Mailgun,
-  #       api_key: System.get_env("MAILGUN_API_KEY"),
-  #       domain: System.get_env("MAILGUN_DOMAIN")
+  aws_ses_region =
+    System.get_env("AWS_SES_REGION") ||
+      raise """
+      environment variable AWS_SES_REGION is missing
+      """
+
+  aws_ses_access_key =
+    System.get_env("AWS_SES_ACCESS_KEY") ||
+      raise """
+      environment variable AWS_SES_ACCESS_KEY is missing
+      """
+
+  aws_ses_secret =
+    System.get_env("AWS_SES_SECRET") ||
+      raise """
+      environment variable AWS_SES_SECRET is missing
+      """
+
+  config :reel, Reel.Mailer,
+    adapter: Swoosh.Adapters.AmazonSES,
+    region: aws_ses_region,
+    access_key: aws_ses_access_key,
+    secret: aws_ses_secret
+
   #
   # For this example you need include a HTTP client required by Swoosh API client.
   # Swoosh supports Hackney and Finch out of the box:
