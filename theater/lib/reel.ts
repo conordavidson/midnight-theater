@@ -5,30 +5,16 @@ const basePath = () => {
   return 'http://localhost:4000';
 };
 
-type ApiConfig = {
-  csrf_token: string;
-};
-
-let apiConfig: ApiConfig | null = null;
-
-const getHeaders = (config: ApiConfig) => {
+const getHeaders = (config: Types.ApiConfig) => {
   return {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-    'X-Csrf-Token': config.csrf_token,
+    'X-Csrf-Token': config.csrfToken,
   };
 };
 
-const initApiRequest = (): Promise<ApiConfig> => {
-  if (apiConfig) return Promise.resolve(apiConfig);
-  return Initializations.index().then((config) => {
-    apiConfig = config;
-    return config;
-  });
-};
-
 export const Initializations = {
-  index: (): Promise<ApiConfig> => {
+  index: (): Promise<{ csrf_token: string; current_account: Types.Account }> => {
     return fetch(`${basePath()}/api/initializations`, {
       credentials: 'include',
     }).then((res) => res.json());
@@ -63,16 +49,22 @@ export const Movies = {
 };
 
 export const Logins = {
-  create(email: string): Promise<{ email: string }> {
-    return initApiRequest()
-      .then((config) =>
-        fetch(`${basePath()}/api/logins`, {
-          method: 'POST',
-          body: JSON.stringify({ email }),
-          headers: getHeaders(config),
-          credentials: 'include',
-        })
-      )
-      .then((res) => res.json());
+  create(config: Types.ApiConfig, { email }: { email: string }): Promise<{ email: string }> {
+    return fetch(`${basePath()}/api/logins`, {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+      headers: getHeaders(config),
+      credentials: 'include',
+    }).then((res) => res.json());
+  },
+};
+
+export const Logouts = {
+  create(config: Types.ApiConfig) {
+    return fetch(`${basePath()}/api/logouts`, {
+      method: 'POST',
+      headers: getHeaders(config),
+      credentials: 'include',
+    }).then((res) => res.json());
   },
 };

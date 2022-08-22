@@ -47,9 +47,30 @@ type LoginStatus =
       };
     };
 
+type RequestStatus =
+  | {
+      status: 'IDLE';
+    }
+  | {
+      status: 'PENDING';
+    }
+  | {
+      status: 'REJECTED';
+    }
+  | {
+      status: 'FULFILLED';
+    };
+
 type AccountContext = {
   login: (email: string) => void;
+  logout: () => void;
+  currentAccount: Types.Account | null;
   loginStatus: LoginStatus;
+  logoutStatus: RequestStatus;
+};
+
+type AppContext = {
+  initializationStatus: RequestStatus;
 };
 
 type MovieContext =
@@ -68,6 +89,7 @@ type MovieContext =
 type TheaterContext = {
   movies: MovieContext;
   account: AccountContext;
+  app: AppContext;
 };
 
 export const TheaterContext = createContext<TheaterContext>({
@@ -81,7 +103,13 @@ export const TheaterContext = createContext<TheaterContext>({
   },
   account: {
     login(_email) {},
+    logout() {},
+    currentAccount: null,
     loginStatus: { status: 'IDLE' },
+    logoutStatus: { status: 'IDLE' },
+  },
+  app: {
+    initializationStatus: { status: 'IDLE' },
   },
 });
 
@@ -90,6 +118,12 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [index, setIndex] = useState<number>(0);
   const [query, setQuery] = useState<Types.MovieQuery>({ era: null, genre: null });
   const [loginStatus, setLoginStatus] = useState<LoginStatus>({ status: 'IDLE' });
+  const [logoutStatus, setLogoutStatus] = useState<RequestStatus>({ status: 'IDLE' });
+  const [initializationStatus, setInitializationStatus] = useState<RequestStatus>({
+    status: 'IDLE',
+  });
+  const [currentAccount, setCurrentAccount] = useState<null | Types.Account>(null);
+  const [apiConfig, setApiConfig] = useState<null | Types.ApiConfig>(null);
 
   const isMount = Utils.useIsMount();
 
@@ -111,6 +145,19 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   };
 
   useEffect(() => {
+    setInitializationStatus({ status: 'PENDING' });
+    Reel.Initializations.index()
+      .then(({ csrf_token, current_account }) => {
+        setCurrentAccount(current_account);
+        setApiConfig({ csrfToken: csrf_token });
+        setInitializationStatus({ status: 'FULFILLED' });
+      })
+      .then(() => {
+        setInitializationStatus({ status: 'REJECTED' });
+      });
+  }, []);
+
+  useEffect(() => {
     fetchMovies().then((movies) => {
       appendMoviesAfterCurrent(movies);
       if (!isMount) setIndex((index) => index + 1);
@@ -126,8 +173,9 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [index]);
 
   const login = (email: string) => {
+    if (!apiConfig) return;
     setLoginStatus({ status: 'PENDING' });
-    return Reel.Logins.create(email)
+    return Reel.Logins.create(apiConfig, { email })
       .then((data) => {
         setLoginStatus({ status: 'FULFILLED', data });
       })
@@ -136,6 +184,19 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
           status: 'REJECTED',
           error: 'There was a problem logging in. Please try again',
         });
+      });
+  };
+
+  const logout = () => {
+    if (!apiConfig) return;
+    setLogoutStatus({ status: 'PENDING' });
+    return Reel.Logouts.create(apiConfig)
+      .then(() => {
+        setLogoutStatus({ status: 'FULFILLED' });
+        setCurrentAccount(null);
+      })
+      .catch(() => {
+        setLogoutStatus({ status: 'REJECTED' });
       });
   };
 
@@ -156,10 +217,6 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     isPreviousDisabled,
   };
 
-  const accountContext = {
-    login,
-  };
-
   const getMovieContext = () => {
     if (movies.length === 0)
       return { currentMovie: { status: 'PENDING' as const }, ...movieControls };
@@ -177,6 +234,15 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return {
       login,
       loginStatus,
+      currentAccount,
+      logout,
+      logoutStatus,
+    };
+  };
+
+  const getAppContext = () => {
+    return {
+      initializationStatus,
     };
   };
 
@@ -184,6 +250,7 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return {
       movies: getMovieContext(),
       account: getAccountContext(),
+      app: getAppContext(),
     };
   };
 

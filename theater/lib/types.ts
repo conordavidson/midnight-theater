@@ -91,3 +91,12 @@ export type MovieQuery = {
   era: EraId | null;
   genre: string | null;
 };
+
+export type Account = {
+  id: string;
+  email: string;
+};
+
+export type ApiConfig = {
+  csrfToken: string;
+};

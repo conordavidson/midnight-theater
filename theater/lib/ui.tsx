@@ -17,6 +17,28 @@ export const Page: FC<PropsWithChildren> = ({ children }) => {
 const AccountForm = () => {
   const theaterContext = Theater.useContext();
 
+  if (theaterContext.account.currentAccount !== null) {
+    return (
+      <div>
+        <p>Logged in as: {theaterContext.account.currentAccount.email}</p>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            theaterContext.account.logout();
+          }}
+        >
+          <button
+            type="submit"
+            className="p-1 bg-black text-white w-full"
+            disabled={theaterContext.account.logoutStatus.status === 'PENDING'}
+          >
+            Logout
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div>
       <form
