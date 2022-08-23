@@ -8,7 +8,7 @@ processes = []
   release_command = "/app/entry eval Reel.Release.migrate"
 
 [env]
-  PHX_HOST = "reel.fly.dev"
+  PHX_HOST = "reel.midnight.theater"
   PORT = "8080"
 
 [experimental]
