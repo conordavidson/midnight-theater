@@ -12,7 +12,7 @@ import * as Types from 'lib/types';
 import * as Utils from 'lib/utils';
 
 export const Globals = {
-  get() {
+  get(): Promise<Types.Globals> {
     return Promise.all([Reel.Genres.index()]).then(([genres]) => {
       return {
         genres,

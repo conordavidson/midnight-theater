@@ -100,3 +100,7 @@ export type Account = {
 export type ApiConfig = {
   csrfToken: string;
 };
+
+export type Globals = {
+  genres: Genre[];
+};

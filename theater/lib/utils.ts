@@ -14,10 +14,16 @@ const addClass = (base: string, newClass: string) => {
   return `${base} ${newClass}`;
 };
 
-type Classes = Array<string | Record<string, boolean>> | string | Record<string, boolean>;
+type Classes =
+  | Array<string | Record<string, boolean> | null | undefined>
+  | string
+  | Record<string, boolean>
+  | null
+  | undefined;
 export const cx = (classes: Classes) => {
   const arrayified = Array.isArray(classes) ? classes : [classes];
   return arrayified.reduce((toApply: string, newClass) => {
+    if (!newClass) return toApply;
     if (typeof newClass === 'string') return addClass(toApply, newClass);
 
     return Object.keys(newClass).reduce((conditionals, className) => {
