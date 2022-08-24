@@ -29,48 +29,18 @@ type MovieControls = {
   onChangeQuery: (query: Types.MovieQuery) => void;
 };
 
-type LoginStatus =
-  | {
-      status: 'IDLE';
-    }
-  | {
-      status: 'PENDING';
-    }
-  | {
-      status: 'REJECTED';
-      error: string;
-    }
-  | {
-      status: 'FULFILLED';
-      data: {
-        email: string;
-      };
-    };
-
-type RequestStatus =
-  | {
-      status: 'IDLE';
-    }
-  | {
-      status: 'PENDING';
-    }
-  | {
-      status: 'REJECTED';
-    }
-  | {
-      status: 'FULFILLED';
-    };
+type LoginStatus = Types.RequestStatus<{ email: string }, string>;
 
 type AccountContext = {
   login: (email: string) => void;
   logout: () => void;
   currentAccount: Types.Account | null;
   loginStatus: LoginStatus;
-  logoutStatus: RequestStatus;
+  logoutStatus: Types.RequestStatus;
 };
 
 type AppContext = {
-  initializationStatus: RequestStatus;
+  initializationStatus: Types.RequestStatus;
 };
 
 type MovieContext =
@@ -118,8 +88,8 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [index, setIndex] = useState<number>(0);
   const [query, setQuery] = useState<Types.MovieQuery>({ era: null, genre: null });
   const [loginStatus, setLoginStatus] = useState<LoginStatus>({ status: 'IDLE' });
-  const [logoutStatus, setLogoutStatus] = useState<RequestStatus>({ status: 'IDLE' });
-  const [initializationStatus, setInitializationStatus] = useState<RequestStatus>({
+  const [logoutStatus, setLogoutStatus] = useState<Types.RequestStatus>({ status: 'IDLE' });
+  const [initializationStatus, setInitializationStatus] = useState<Types.RequestStatus>({
     status: 'IDLE',
   });
   const [currentAccount, setCurrentAccount] = useState<null | Types.Account>(null);
@@ -143,6 +113,30 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       genreIds,
     });
   };
+
+  const isNextDisabled = index === movies.length - 1;
+  const isPreviousDisabled = index === 0;
+
+  const onNext = () => {
+    if (isNextDisabled) return;
+    setIndex(index + 1);
+  };
+  const onPrevious = () => {
+    if (isPreviousDisabled) return;
+    setIndex(index - 1);
+  };
+
+  const onKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'ArrowLeft') onPrevious();
+    if (event.key === 'ArrowRight') onNext();
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      document.removeEventListener('keydown', onKeydown);
+    };
+  });
 
   useEffect(() => {
     setInitializationStatus({ status: 'PENDING' });
@@ -200,18 +194,9 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       });
   };
 
-  const isNextDisabled = index === movies.length - 1;
-  const isPreviousDisabled = index === 0;
-
   const movieControls = {
-    onNext: () => {
-      if (isNextDisabled) return;
-      setIndex(index + 1);
-    },
-    onPrevious: () => {
-      if (isPreviousDisabled) return;
-      setIndex(index - 1);
-    },
+    onNext,
+    onPrevious,
     onChangeQuery: setQuery,
     isNextDisabled,
     isPreviousDisabled,

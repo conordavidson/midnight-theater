@@ -104,3 +104,27 @@ export type ApiConfig = {
 export type Globals = {
   genres: Genre[];
 };
+
+export type RequestStatus<TData = undefined, TError = undefined> =
+  | {
+      status: 'IDLE';
+    }
+  | {
+      status: 'PENDING';
+    }
+  | (TError extends undefined
+      ? {
+          status: 'REJECTED';
+        }
+      : {
+          status: 'REJECTED';
+          error: TError;
+        })
+  | (TData extends undefined
+      ? {
+          status: 'FULFILLED';
+        }
+      : {
+          status: 'FULFILLED';
+          data: TData;
+        });
