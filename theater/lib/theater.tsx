@@ -27,6 +27,7 @@ type MovieControls = {
   isNextDisabled: boolean;
   isPreviousDisabled: boolean;
   onChangeQuery: (query: Types.MovieQuery) => void;
+  query: Types.MovieQuery;
 };
 
 type LoginStatus = Types.RequestStatus<{ email: string }, string>;
@@ -70,6 +71,7 @@ export const TheaterContext = createContext<TheaterContext>({
     isPreviousDisabled: false,
     onChangeQuery(_query) {},
     currentMovie: { status: 'PENDING' },
+    query: { era: null, genre: null },
   },
   account: {
     login(_email) {},
@@ -198,6 +200,7 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     onNext,
     onPrevious,
     onChangeQuery: setQuery,
+    query: query,
     isNextDisabled,
     isPreviousDisabled,
   };

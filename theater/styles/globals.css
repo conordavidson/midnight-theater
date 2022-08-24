@@ -22,10 +22,13 @@ a {
 
 @keyframes bounce {
   0% {
-    transform: translateY(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
-  50% {
-    transform: translate3d(0, -1rem, 0);
+  5% {
+    transform: translate3d(0, -0.75rem, 0);
+  }
+  10% {
+    transform: translate3d(0, 0, 0);
   }
   100% {
     transform: translate3d(0, 0, 0);
@@ -53,14 +56,14 @@ mark {
 
 .bouncing-text mark {
   display: inline-block;
-  animation: bounce 950ms ease-in-out infinite;
+  animation: bounce 6000ms ease-in-out infinite;
   /* focus 2000ms ease-in-out infinite 2s */
 }
 
 .shadow-text {
   font-weight: 600;
-  font-size: 1.5rem;
-  text-shadow: -0.11rem 0.11rem 0 theme('colors.gold');
+  font-size: 1.25rem;
+  text-shadow: -0.08rem 0.08rem 0 theme('colors.gold');
   -webkit-text-stroke-color: theme('colors.gold');
   color: theme('colors.midnight');
   -webkit-text-fill-color: theme('colors.midnight');
