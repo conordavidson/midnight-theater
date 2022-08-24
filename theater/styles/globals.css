@@ -32,16 +32,29 @@ a {
   }
 }
 
+@keyframes focus {
+  0% {
+    filter: blur(0px);
+  }
+  25% {
+    filter: blur(0.75px);
+  }
+  50% {
+    filter: blur(0px);
+  }
+  100% {
+    filter: blur(0px);
+  }
+}
+
 mark {
   background-color: transparent;
 }
 
 .bouncing-text mark {
   display: inline-block;
-  animation-name: bounce;
-  animation-duration: 950ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
+  animation: bounce 950ms ease-in-out infinite;
+  /* focus 2000ms ease-in-out infinite 2s */
 }
 
 .shadow-text {
@@ -52,9 +65,4 @@ mark {
   color: theme('colors.midnight');
   -webkit-text-fill-color: theme('colors.midnight');
   -webkit-text-stroke-width: 0.5px;
-  /* filter: blur(0.75px); */
-}
-
-.shadow-input {
-  box-shadow: -0.1rem 0.1rem 0 #0e0e1c, -0.2rem 0.2rem 0 #fde68a;
 }

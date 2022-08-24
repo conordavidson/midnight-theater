@@ -123,52 +123,60 @@ const QueryMenu: FC<{ globals: Types.Globals }> = ({ globals }) => {
   );
 };
 
+const Container: FC<PropsWithChildren> = ({ children }) => {
+  return <div className="px-4">{children}</div>;
+};
+
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ globals }) => {
   const theaterContext = Theater.useContext();
 
   return (
     <Ui.Page globals={globals}>
       <QueryMenu globals={globals} />
-      <div className="max-w-screen-lg px-4 mt-6">
+      <div className="mt-6 pb-12">
         {theaterContext.movies.currentMovie.status === 'PENDING' ? (
           <p>loading...</p>
         ) : (
           <div>
-            <div className="flex justify-between mb-6">
-              <div className="pr-6">
-                <Ui.Text.Body>
-                  {new Date(theaterContext.movies.currentMovie.movie.release_date).getUTCFullYear()}
-                </Ui.Text.Body>
-                <Ui.Text.Heading as="h2">{`${theaterContext.movies.currentMovie.movie.title}`}</Ui.Text.Heading>
-              </div>
-              <div className="pt-2 flex-shrink-0 flex items-start space-x-6">
-                <div className="shadow-input">
+            <Container>
+              <div className="flex justify-between mb-6">
+                <div className="pr-6">
+                  <Ui.Text.Body>
+                    {new Date(
+                      theaterContext.movies.currentMovie.movie.release_date
+                    ).getUTCFullYear()}
+                  </Ui.Text.Body>
+                  <Ui.Text.Heading as="h2">{`${theaterContext.movies.currentMovie.movie.title}`}</Ui.Text.Heading>
+                </div>
+                <div className="pt-2 flex-shrink-0 flex items-start space-x-6">
+                  <div>
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-midnight text-gold border border-solid border-mud hover:bg-gold hover:border-mud hover:text-midnight transition-colors"
+                      onClick={theaterContext.movies.onPrevious}
+                      disabled={theaterContext.movies.isPreviousDisabled}
+                    >
+                      ← Previous
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-midnight text-gold border-t border-r border-b border-solid border-mud hover:bg-gold hover:border-mud hover:text-midnight transition-colors"
+                      onClick={theaterContext.movies.onNext}
+                      disabled={theaterContext.movies.isNextDisabled}
+                    >
+                      Next →
+                    </button>
+                  </div>
+
                   <button
                     type="button"
-                    className="px-4 py-2 bg-midnight text-gold border border-solid border-gold hover:bg-gold hover:text-midnight transition-colors"
-                    onClick={theaterContext.movies.onPrevious}
-                    disabled={theaterContext.movies.isPreviousDisabled}
+                    className="px-4 py-2 bg-midnight text-gold border border-solid border-mud hover:bg-gold hover:border-mud hover:text-midnight transition-colors"
                   >
-                    ← Previous
-                  </button>
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-midnight text-gold border-t border-r border-b border-solid border-gold hover:bg-gold hover:text-midnight transition-colors"
-                    onClick={theaterContext.movies.onNext}
-                    disabled={theaterContext.movies.isNextDisabled}
-                  >
-                    Next →
+                    Save ♡
                   </button>
                 </div>
-
-                <button
-                  type="button"
-                  className="px-4 py-2 shadow-input bg-midnight text-gold border border-solid border-gold hover:bg-gold hover:text-midnight transition-colors"
-                >
-                  Save ♡
-                </button>
               </div>
-            </div>
+            </Container>
             <div className="relative aspect-video">
               {theaterContext.movies.currentMovie.movie.video.site === 'YouTube' && (
                 <iframe
@@ -191,9 +199,11 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
                 />
               )}
             </div>
-            <Ui.Text.Body className="mt-6">
-              {theaterContext.movies.currentMovie.movie.overview}
-            </Ui.Text.Body>
+            <Container>
+              <Ui.Text.Body className="mt-6">
+                {theaterContext.movies.currentMovie.movie.overview}
+              </Ui.Text.Body>
+            </Container>
           </div>
         )}
       </div>

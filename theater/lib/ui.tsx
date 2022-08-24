@@ -8,11 +8,11 @@ export const Text = { ...TextUi };
 
 export const Page: FC<PropsWithChildren<{ globals: Types.Globals }>> = ({ children, globals }) => {
   return (
-    <div className="flex h-screen">
-      <aside className="w-[320px] pt-8 px-4 border-r border-mud">
+    <div className="flex min-h-screen">
+      <aside className="w-[320px] px-4">
         <AccountSide />
       </aside>
-      <main className="flex-1">{children}</main>
+      <main className="border-l border-mud flex-1">{children}</main>
     </div>
   );
 };
@@ -26,8 +26,10 @@ const AccountSide = () => {
     if (theaterContext.account.currentAccount !== null) {
       return (
         <div>
-          <Text.Body>Logged in as: {theaterContext.account.currentAccount.email}</Text.Body>
+          <Text.Eyebrow>Logged in as</Text.Eyebrow>
+          <Text.Paragraph>{theaterContext.account.currentAccount.email}</Text.Paragraph>
           <form
+            className="mt-3"
             onSubmit={(event) => {
               event.preventDefault();
               theaterContext.account.logout();
@@ -35,7 +37,7 @@ const AccountSide = () => {
           >
             <button
               type="submit"
-              className="p-2 bg-midnight text-gold border border-solid border-gold hover:bg-gold hover:text-midnight transition-colors shadow-input w-full"
+              className="p-2 bg-midnight text-gold border border-solid border-mud hover:bg-gold hover:text-midnight transition-colors w-full"
               disabled={theaterContext.account.logoutStatus.status === 'PENDING'}
             >
               Logout
@@ -47,7 +49,6 @@ const AccountSide = () => {
 
     return (
       <form
-        className="shadow-input"
         onSubmit={(event) => {
           event.preventDefault();
           theaterContext.account.login(email);
@@ -61,7 +62,7 @@ const AccountSide = () => {
           name="email"
           type="email"
           placeholder="Enter email"
-          className="text-center p-1 border border-gold border-solid bg-midnight text-gold w-full placeholder:text-gold"
+          className="text-center p-1 border border-mud border-solid bg-midnight text-gold w-full placeholder:text-gold placeholder:opacity-40"
           required
           disabled={
             theaterContext.account.loginStatus.status === 'FULFILLED' ||
@@ -75,7 +76,12 @@ const AccountSide = () => {
           theaterContext.account.loginStatus.status === 'PENDING') && (
           <button
             type="submit"
-            className="p-1 bg-gold text-midnight w-full"
+            className={Utils.cx([
+              'p-1 border-x border-b border-mud border-solid bg-midnight text-gold w-full hover:bg-gold hover:text-midnight transition-colors cursor-pointer',
+              {
+                'bg-gold text-midnight': !!email,
+              },
+            ])}
             disabled={theaterContext.account.loginStatus.status === 'PENDING'}
           >
             Sign In / Sign Up
@@ -92,11 +98,11 @@ const AccountSide = () => {
   };
 
   return (
-    <div>
+    <div className="sticky top-0 pt-6">
       <div className="mb-6 text-center">
         <BouncingText text="MIDNIGHT THEATER" />
       </div>
-      {getContent()}
+      <div className="mt-8">{getContent()}</div>
     </div>
   );
 };
