@@ -27,7 +27,7 @@ const Base: FC<PropsWithChildren<TextProps & { defaultClasses: string }>> = ({
 };
 
 export const Eyebrow: TextComponent = (props) => {
-  return <Base defaultClasses="uppercase font-bold text-sm" {...props} />;
+  return <Base defaultClasses="uppercase font-bold text-xs" {...props} />;
 };
 
 export const Heading: TextComponent = (props) => {
