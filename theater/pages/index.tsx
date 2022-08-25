@@ -41,19 +41,13 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
               )}
             </div>
             <Container>
-              <div className="pt-6 flex justify-between mb-6">
-                <div className="pr-6">
-                  <Ui.Text.Body>
-                    {new Date(
-                      theaterContext.movies.currentMovie.movie.release_date
-                    ).getUTCFullYear()}
-                  </Ui.Text.Body>
-                  <Ui.Text.Heading as="h2">{`${theaterContext.movies.currentMovie.movie.title}`}</Ui.Text.Heading>
-                </div>
-                <div className="pt-2 flex-shrink-0 flex items-start space-x-6">
-                  <Ui.Button type="button">Save ♡</Ui.Button>
-                </div>
+              <div className="pt-6">
+                <Ui.Text.Body>
+                  {new Date(theaterContext.movies.currentMovie.movie.release_date).getUTCFullYear()}
+                </Ui.Text.Body>
+                <Ui.Text.Heading as="h2">{`${theaterContext.movies.currentMovie.movie.title}`}</Ui.Text.Heading>
               </div>
+
               <Ui.Text.Body className="mt-6 max-w-[800px]">
                 {theaterContext.movies.currentMovie.movie.overview}
               </Ui.Text.Body>

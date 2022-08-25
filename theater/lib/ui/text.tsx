@@ -9,7 +9,7 @@ type TextProps = {
 
 type TextComponent = FC<PropsWithChildren<TextProps>>;
 
-const baseClasses = 'text-gold font-sans';
+const baseClasses = 'text-gold font-sans font-light';
 
 const Base: FC<PropsWithChildren<TextProps & { defaultClasses: string }>> = ({
   as = 'p',

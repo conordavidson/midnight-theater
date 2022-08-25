@@ -4,8 +4,9 @@ module.exports = {
   theme: {
     colors: {
       midnight: '#0C0C15',
-      gold: '#FDE68A',
+      gold: '#C6BC9F',
       mud: '#282628',
+      current: 'currentColor',
     },
     extend: {},
   },
