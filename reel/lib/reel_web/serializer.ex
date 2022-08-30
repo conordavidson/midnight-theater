@@ -29,7 +29,8 @@ defmodule ReelWeb.Serializer do
         inserted_at: inserted_at,
         updated_at: updated_at,
         video: video,
-        genres: genres
+        genres: genres,
+        saves: saves
       }) do
     %{
       id: id,
@@ -42,7 +43,21 @@ defmodule ReelWeb.Serializer do
       inserted_at: inserted_at,
       updated_at: updated_at,
       video: video(video),
-      genres: Enum.map(genres, &genre/1)
+      genres: Enum.map(genres, &genre/1),
+      save:
+        case saves do
+          nil ->
+            nil
+
+          [save] ->
+            %{
+              id: save.id,
+              movie_id: save.movie_id
+            }
+
+          _ ->
+            nil
+        end
     }
   end
 

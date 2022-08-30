@@ -143,5 +143,38 @@ defmodule ReelWeb.MoviesControllerTest do
 
       assert length(movies) == 5
     end
+
+    test "joins saves for authenticated requests", %{conn: conn} do
+      movies = Enum.map(1..10, fn _ -> setup_movie() end)
+
+      account = create_account()
+
+      %{id: movie1_id} = Enum.at(movies, 0)
+      %{id: movie2_id} = Enum.at(movies, 1)
+
+      %{id: save1_id} =
+        %Reel.Schemas.Save{account: account, movie_id: movie1_id} |> Reel.Repo.insert!()
+
+      %{id: save2_id} =
+        %Reel.Schemas.Save{account: account, movie_id: movie2_id} |> Reel.Repo.insert!()
+
+      json =
+        conn
+        |> auth_conn(account)
+        |> get(Routes.movies_path(conn, :index))
+        |> json_response(200)
+        |> Map.get("movies")
+
+      assert length(json) == 10
+
+      unsaved_movies = json |> Enum.filter(fn movie -> movie["save"] == nil end)
+      assert length(unsaved_movies) == 8
+
+      movie1_json = json |> Enum.find(fn movie -> movie["id"] == movie1_id end)
+      movie2_json = json |> Enum.find(fn movie -> movie["id"] == movie2_id end)
+
+      assert %{"save" => %{"id" => ^save1_id, "movie_id" => ^movie1_id}} = movie1_json
+      assert %{"save" => %{"id" => ^save2_id, "movie_id" => ^movie2_id}} = movie2_json
+    end
   end
 end

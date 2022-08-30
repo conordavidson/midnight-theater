@@ -4,6 +4,8 @@ defmodule ReelWeb.MoviesController do
   import Ecto.Query
 
   def index(conn, params) do
+    current_account = ReelWeb.Authenticator.current_account(conn)
+
     # We pluck IDs first. This reduces query time
     # with order_by(RANDOM()).
     movies_subquery =
@@ -18,6 +20,7 @@ defmodule ReelWeb.MoviesController do
     movies =
       Reel.Schemas.Movie
       |> where([movies], movies.id in subquery(movies_subquery))
+      |> join_saves(current_account)
       |> preload([:genres, :video])
       |> Reel.Repo.all()
       |> Enum.map(&ReelWeb.Serializer.movie/1)
@@ -60,4 +63,16 @@ defmodule ReelWeb.MoviesController do
   end
 
   defp genre_filter(query, _params), do: query
+
+  defp join_saves(query, nil) do
+    query
+  end
+
+  defp join_saves(query, %Reel.Schemas.Account{id: account_id}) do
+    query
+    |> join(:left, [movies], saves in Reel.Schemas.Save,
+      on: saves.movie_id == movies.id and saves.account_id == ^account_id
+    )
+    |> preload([_movies, saves], saves: saves)
+  end
 end
