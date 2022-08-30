@@ -1,4 +1,7 @@
 defmodule Reel.TestHelpers do
+  @moduledoc """
+  Shared test utilities
+  """
   def genre_attrs do
     %{
       tmdb_id: Enum.random(1..9_999_999),

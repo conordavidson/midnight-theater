@@ -1,4 +1,8 @@
 defmodule Reel.Saves do
+  @moduledoc """
+  Functions around saving movies.
+  """
+
   import Ecto.Changeset
   import Reel.Repo
   import Ecto.Query
