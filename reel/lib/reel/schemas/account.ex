@@ -14,6 +14,7 @@ defmodule Reel.Schemas.Account do
     field :confirmation_token_inserted_at, :utc_datetime
 
     has_many :tokens, Reel.Schemas.Token
+    has_many :saves, Reel.Schemas.Save
 
     timestamps()
   end

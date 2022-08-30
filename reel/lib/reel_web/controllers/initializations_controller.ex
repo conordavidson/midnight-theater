@@ -12,8 +12,13 @@ defmodule ReelWeb.InitializationsController do
   def index(conn, _params) do
     current_account =
       case conn.assigns[:current_account] do
-        nil -> nil
-        account -> ReelWeb.Serializer.account(account)
+        nil ->
+          nil
+
+        account ->
+          account
+          |> Reel.Repo.preload(saves: [movie: [:video, :genres]])
+          |> ReelWeb.Serializer.account()
       end
 
     json(conn, %{

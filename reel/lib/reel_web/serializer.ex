@@ -89,8 +89,12 @@ defmodule ReelWeb.Serializer do
     }
   end
 
-  def account(%Reel.Schemas.Account{id: id, email: email}) do
-    %{id: id, email: email}
+  def account(%Reel.Schemas.Account{id: id, email: email, saves: saves}) do
+    %{
+      id: id,
+      email: email,
+      saves: Enum.map(saves, &save/1)
+    }
   end
 
   def save(%Reel.Schemas.Save{id: id, movie_id: movie_id, movie: mov}) do

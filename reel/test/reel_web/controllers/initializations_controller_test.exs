@@ -15,24 +15,56 @@ defmodule ReelWeb.InitializationsControllerTest do
         conn
         |> get(Routes.logins_path(conn, :show, account.confirmation_token))
 
-      conn =
+      json =
         conn
         |> get(Routes.initializations_path(conn, :index))
         |> json_response(200)
 
-      assert is_binary(conn["csrf_token"])
-      assert conn["current_account"]["id"] == account.id
-      assert conn["current_account"]["email"] == account.email
+      assert is_binary(json["csrf_token"])
+      assert json["current_account"]["id"] == account.id
+      assert json["current_account"]["email"] == account.email
+      assert json["current_account"]["saves"] == []
+    end
+
+    test "preloads saves", %{conn: conn} do
+      account =
+        %Reel.Schemas.Account{
+          email: Faker.Internet.email(),
+          confirmation_token: Ecto.UUID.generate(),
+          confirmation_token_inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        }
+        |> Reel.Repo.insert!()
+
+      movie1 = setup_movie()
+      movie2 = setup_movie()
+      movie1_id = movie1.id
+      movie2_id = movie2.id
+
+      %Reel.Schemas.Save{account: account, movie: movie1} |> Reel.Repo.insert!()
+      %Reel.Schemas.Save{account: account, movie: movie2} |> Reel.Repo.insert!()
+
+      conn =
+        conn
+        |> get(Routes.logins_path(conn, :show, account.confirmation_token))
+
+      json =
+        conn
+        |> get(Routes.initializations_path(conn, :index))
+        |> json_response(200)
+
+      assert length(json["current_account"]["saves"]) == 2
+      assert %{"movie" => %{"id" => ^movie1_id}} = json["current_account"]["saves"] |> Enum.at(0)
+      assert %{"movie" => %{"id" => ^movie2_id}} = json["current_account"]["saves"] |> Enum.at(1)
     end
 
     test "returns nil for current account", %{conn: conn} do
-      conn =
+      json =
         conn
         |> get(Routes.initializations_path(conn, :index))
         |> json_response(200)
 
-      assert is_binary(conn["csrf_token"])
-      assert conn["current_account"] == nil
+      assert is_binary(json["csrf_token"])
+      assert json["current_account"] == nil
     end
   end
 end
