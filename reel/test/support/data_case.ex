@@ -24,6 +24,7 @@ defmodule Reel.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Reel.DataCase
+      import Reel.TestHelpers
     end
   end
 

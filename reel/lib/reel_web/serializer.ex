@@ -77,4 +77,12 @@ defmodule ReelWeb.Serializer do
   def account(%Reel.Schemas.Account{id: id, email: email}) do
     %{id: id, email: email}
   end
+
+  def save(%Reel.Schemas.Save{id: id, movie_id: movie_id, movie: mov}) do
+    %{
+      id: id,
+      movie_id: movie_id,
+      movie: movie(mov)
+    }
+  end
 end

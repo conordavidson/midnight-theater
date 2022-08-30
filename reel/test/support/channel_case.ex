@@ -22,6 +22,7 @@ defmodule ReelWeb.ChannelCase do
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
       import ReelWeb.ChannelCase
+      import Reel.TestHelpers
 
       # The default endpoint for testing
       @endpoint ReelWeb.Endpoint

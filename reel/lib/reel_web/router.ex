@@ -16,6 +16,8 @@ defmodule ReelWeb.Router do
     resources("/genres", GenresController, only: [:index])
     resources("/logins", LoginsController, only: [:show, :create], param: "confirmation_token")
     resources("/logouts", LogoutsController, only: [:create])
+    resources("/saves", SavesController, only: [:create])
+    resources("/unsaves", UnsavesController, only: [:create])
   end
 
   # Enables LiveDashboard only for development

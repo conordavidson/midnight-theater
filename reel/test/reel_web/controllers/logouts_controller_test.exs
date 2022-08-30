@@ -1,15 +1,6 @@
 defmodule ReelWeb.LogoutsControllerTest do
   use ReelWeb.ConnCase
 
-  def create_account do
-    %Reel.Schemas.Account{
-      email: Faker.Internet.email(),
-      confirmation_token: Ecto.UUID.generate(),
-      confirmation_token_inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)
-    }
-    |> Reel.Repo.insert!()
-  end
-
   describe "logout" do
     test "revokes token and clears session", %{conn: conn} do
       account = create_account()

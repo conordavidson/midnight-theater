@@ -23,6 +23,7 @@ defmodule ReelWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import ReelWeb.ConnCase
+      import Reel.TestHelpers
 
       alias ReelWeb.Router.Helpers, as: Routes
 

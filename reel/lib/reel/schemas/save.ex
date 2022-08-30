@@ -6,8 +6,10 @@ defmodule Reel.Schemas.Save do
   use Reel.Schema
 
   schema "saves" do
-    belongs_to :account, Reel.Schemas.Account
-    belongs_to :movie, Reel.Schemas.Movie
+    belongs_to(:account, Reel.Schemas.Account)
+    belongs_to(:movie, Reel.Schemas.Movie)
+
+    field(:deleted_at, :utc_datetime)
 
     timestamps()
   end
