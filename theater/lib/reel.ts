@@ -20,6 +20,39 @@ export const Initializations = {
     }).then((res) => res.json());
   },
 };
+export const Saves = {
+  index(): Promise<{ saves: Types.Save[] }> {
+    return fetch(`${basePath()}/api/saves`, {
+      credentials: 'include',
+    }).then((res) => res.json());
+  },
+
+  create(
+    config: Types.ApiConfig,
+    { movieId }: { movieId: string }
+  ): Promise<{ saved_movie_ids: string[] }> {
+    return fetch(`${basePath()}/api/saves`, {
+      method: 'POST',
+      body: JSON.stringify({ movie_id: movieId }),
+      headers: getHeaders(config),
+      credentials: 'include',
+    }).then((res) => res.json());
+  },
+};
+
+export const Unsaves = {
+  create(
+    config: Types.ApiConfig,
+    { movieId }: { movieId: string }
+  ): Promise<{ saved_movie_ids: string[] }> {
+    return fetch(`${basePath()}/api/unsaves`, {
+      method: 'POST',
+      body: JSON.stringify({ movie_id: movieId }),
+      headers: getHeaders(config),
+      credentials: 'include',
+    }).then((res) => res.json());
+  },
+};
 
 export const Genres = {
   index: (): Promise<Types.Genre[]> => {

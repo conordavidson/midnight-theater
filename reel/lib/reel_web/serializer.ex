@@ -93,7 +93,7 @@ defmodule ReelWeb.Serializer do
     %{
       id: id,
       email: email,
-      saves: Enum.map(saves, &save/1)
+      saved_movie_ids: Enum.map(saves, fn save -> save.movie_id end)
     }
   end
 

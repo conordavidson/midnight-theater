@@ -9,6 +9,10 @@ defmodule ReelWeb.InitializationsController do
 
   use ReelWeb, :controller
 
+  import Ecto.Query
+
+  alias Reel.Schemas.Save, as: Save
+
   def index(conn, _params) do
     current_account =
       case conn.assigns[:current_account] do
@@ -17,7 +21,7 @@ defmodule ReelWeb.InitializationsController do
 
         account ->
           account
-          |> Reel.Repo.preload(saves: [movie: [:video, :genres]])
+          |> Reel.Repo.preload(saves: from(s in Save, where: is_nil(s.deleted_at)))
           |> ReelWeb.Serializer.account()
       end
 

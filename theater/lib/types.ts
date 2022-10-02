@@ -34,6 +34,16 @@ export type Movie = {
   genres: Genre[];
 };
 
+export type FormattedMovie = Movie & {
+  is_saved: boolean;
+};
+
+export type Save = {
+  id: string;
+  movie_id: string;
+  movie: Movie;
+};
+
 export const ERAS = [
   '1950s',
   '1960s',
@@ -95,6 +105,7 @@ export type MovieQuery = {
 export type Account = {
   id: string;
   email: string;
+  saved_movie_ids: string[];
 };
 
 export type ApiConfig = {

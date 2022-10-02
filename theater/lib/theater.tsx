@@ -32,13 +32,30 @@ type MovieControls = {
 
 type LoginStatus = Types.RequestStatus<{ email: string }, string>;
 
-type AccountContext = {
+type UnauthenticatedAccountContext = {
   login: (email: string) => void;
+  logout: null;
+  currentAccount: null;
+  onSaveMovie: null;
+  onUnsaveMovie: null;
+  savedMovieIds: null;
+};
+
+type AuthenticatedAccountContext = {
+  login: null;
   logout: () => void;
-  currentAccount: Types.Account | null;
+  currentAccount: Types.Account;
+  onSaveMovie: (movieId: string) => Promise<void>;
+  onUnsaveMovie: (movieId: string) => Promise<void>;
+  savedMovieIds: Set<string>;
+};
+
+type AccountContext = {
   loginStatus: LoginStatus;
   logoutStatus: Types.RequestStatus;
-};
+  saveMovieStatus: Types.RequestStatus;
+  unsaveMovieStatus: Types.RequestStatus;
+} & (AuthenticatedAccountContext | UnauthenticatedAccountContext);
 
 type AppContext = {
   initializationStatus: Types.RequestStatus;
@@ -53,7 +70,7 @@ type MovieContext =
   | (MovieControls & {
       currentMovie: {
         status: 'FULFILLED';
-        movie: Types.Movie;
+        movie: Types.FormattedMovie;
       };
     });
 
@@ -75,10 +92,15 @@ export const TheaterContext = createContext<TheaterContext>({
   },
   account: {
     login(_email) {},
-    logout() {},
+    logout: null,
     currentAccount: null,
     loginStatus: { status: 'IDLE' },
     logoutStatus: { status: 'IDLE' },
+    onSaveMovie: null,
+    onUnsaveMovie: null,
+    saveMovieStatus: { status: 'IDLE' },
+    unsaveMovieStatus: { status: 'IDLE' },
+    savedMovieIds: null,
   },
   app: {
     initializationStatus: { status: 'IDLE' },
@@ -88,6 +110,11 @@ export const TheaterContext = createContext<TheaterContext>({
 export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [movies, setMovies] = useState<Types.Movie[]>([]);
   const [index, setIndex] = useState<number>(0);
+  const [savedMovieIds, setSavedMovieIds] = useState<Set<string>>(new Set());
+  const [saveMovieStatus, setSaveMovieStatus] = useState<Types.RequestStatus>({ status: 'IDLE' });
+  const [unsaveMovieStatus, setUnsaveMovieStatus] = useState<Types.RequestStatus>({
+    status: 'IDLE',
+  });
   const [query, setQuery] = useState<Types.MovieQuery>({ era: null, genre: null });
   const [loginStatus, setLoginStatus] = useState<LoginStatus>({ status: 'IDLE' });
   const [logoutStatus, setLogoutStatus] = useState<Types.RequestStatus>({ status: 'IDLE' });
@@ -147,8 +174,9 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setCurrentAccount(current_account);
         setApiConfig({ csrfToken: csrf_token });
         setInitializationStatus({ status: 'FULFILLED' });
+        if (current_account) setSavedMovieIds(new Set(current_account.saved_movie_ids));
       })
-      .then(() => {
+      .catch(() => {
         setInitializationStatus({ status: 'REJECTED' });
       });
   }, []);
@@ -196,6 +224,34 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       });
   };
 
+  const onSaveMovie = (movieId: string) => {
+    if (!apiConfig) return Promise.resolve();
+    if (!currentAccount) return Promise.resolve();
+    setSaveMovieStatus({ status: 'PENDING' });
+    return Reel.Saves.create(apiConfig, { movieId })
+      .then(({ saved_movie_ids }) => {
+        setSaveMovieStatus({ status: 'FULFILLED' });
+        setSavedMovieIds(new Set(saved_movie_ids));
+      })
+      .catch(() => {
+        setSaveMovieStatus({ status: 'REJECTED' });
+      });
+  };
+
+  const onUnsaveMovie = (movieId: string) => {
+    if (!apiConfig) return Promise.resolve();
+    if (!currentAccount) return Promise.resolve();
+    setUnsaveMovieStatus({ status: 'PENDING' });
+    return Reel.Unsaves.create(apiConfig, { movieId })
+      .then(({ saved_movie_ids }) => {
+        setUnsaveMovieStatus({ status: 'FULFILLED' });
+        setSavedMovieIds(new Set(saved_movie_ids));
+      })
+      .catch(() => {
+        setUnsaveMovieStatus({ status: 'REJECTED' });
+      });
+  };
+
   const movieControls = {
     onNext,
     onPrevious,
@@ -212,19 +268,42 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return {
       currentMovie: {
         status: 'FULFILLED' as const,
-        movie: movies[index],
+        movie: {
+          ...movies[index],
+          is_saved: savedMovieIds.has(movies[index].id),
+        },
       },
       ...movieControls,
     };
   };
 
   const getAccountContext = () => {
-    return {
-      login,
+    const base = {
       loginStatus,
-      currentAccount,
-      logout,
       logoutStatus,
+      saveMovieStatus,
+      unsaveMovieStatus,
+    };
+
+    if (currentAccount)
+      return {
+        ...base,
+        currentAccount,
+        login: null,
+        logout,
+        onSaveMovie,
+        onUnsaveMovie,
+        savedMovieIds,
+      };
+
+    return {
+      ...base,
+      currentAccount,
+      login,
+      logout: null,
+      onSaveMovie: null,
+      onUnsaveMovie: null,
+      savedMovieIds: null,
     };
   };
 

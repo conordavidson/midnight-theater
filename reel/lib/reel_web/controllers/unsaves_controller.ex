@@ -24,11 +24,7 @@ defmodule ReelWeb.UnsavesController do
       movie ->
         Reel.Saves.unsave_movie!(account, movie)
 
-        saves =
-          Reel.Saves.for_account(account)
-          |> Enum.map(&ReelWeb.Serializer.save/1)
-
-        json(conn, %{saves: saves})
+        json(conn, %{saved_movie_ids: Reel.Saves.movie_ids_for_account(account)})
     end
   end
 

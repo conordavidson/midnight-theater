@@ -3,6 +3,7 @@ import React from 'react';
 import type { AppProps } from 'next/app';
 
 import * as Theater from 'lib/theater';
+import * as Ui from 'lib/ui';
 
 if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
   const ReactDOM = require('react-dom');
@@ -13,7 +14,9 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Theater.ContextProvider>
-      <Component {...pageProps} />
+      <Ui.Page>
+        <Component {...pageProps} />
+      </Ui.Page>
     </Theater.ContextProvider>
   );
 }

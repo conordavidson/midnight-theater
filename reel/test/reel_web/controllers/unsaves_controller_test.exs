@@ -19,8 +19,8 @@ defmodule ReelWeb.UnsavesControllerTest do
         |> post(Routes.unsaves_path(conn, :create, %{movie_id: movie1_id}))
         |> json_response(200)
 
-      assert length(json["saves"]) == 1
-      assert %{"movie" => %{"id" => ^movie2_id}} = json["saves"] |> Enum.at(0)
+      assert length(json["saved_movie_ids"]) == 1
+      assert movie2_id == json["saved_movie_ids"] |> Enum.at(0)
     end
 
     test "no-ops if already movie not saved", %{conn: conn} do
@@ -39,8 +39,8 @@ defmodule ReelWeb.UnsavesControllerTest do
         |> post(Routes.unsaves_path(conn, :create, %{movie_id: movie1_id}))
         |> json_response(200)
 
-      assert length(json["saves"]) == 1
-      assert %{"movie" => %{"id" => ^movie2_id}} = json["saves"] |> Enum.at(0)
+      assert length(json["saved_movie_ids"]) == 1
+      assert movie2_id == json["saved_movie_ids"] |> Enum.at(0)
     end
 
     test "requires authentication", %{conn: conn} do

@@ -12,6 +12,16 @@ defmodule ReelWeb.SavesController do
 
   plug(ReelWeb.Authorizer)
 
+  def index(conn, _params) do
+    saves =
+      conn
+      |> current_account()
+      |> Reel.Saves.for_account()
+      |> Enum.map(&ReelWeb.Serializer.save/1)
+
+    json(conn, %{saves: saves})
+  end
+
   def create(conn, %{"movie_id" => movie_id}) do
     account = current_account(conn)
 
@@ -24,11 +34,7 @@ defmodule ReelWeb.SavesController do
       movie ->
         Reel.Saves.save_movie!(account, movie)
 
-        saves =
-          Reel.Saves.for_account(account)
-          |> Enum.map(&ReelWeb.Serializer.save/1)
-
-        json(conn, %{saves: saves})
+        json(conn, %{saved_movie_ids: Reel.Saves.movie_ids_for_account(account)})
     end
   end
 
