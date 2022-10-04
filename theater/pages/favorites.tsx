@@ -2,6 +2,8 @@ import type { NextPage, InferGetStaticPropsType } from 'next';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
+import Head from 'next/head';
+
 import * as Theater from 'lib/theater';
 import * as Reel from 'lib/reel';
 import * as Ui from 'lib/ui';
@@ -48,6 +50,9 @@ const Favorites: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ g
 
   return (
     <div className="pb-16">
+      <Head>
+        <title>Login</title>
+      </Head>
       <Ui.Container>
         {saves.status === 'IDLE' ||
           (saves.status === 'PENDING' && (

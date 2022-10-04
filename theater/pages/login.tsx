@@ -2,11 +2,13 @@ import type { NextPage, InferGetStaticPropsType } from 'next';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
+import Head from 'next/head';
+
 import * as Theater from 'lib/theater';
 import * as Ui from 'lib/ui';
 import * as Utils from 'lib/utils';
 
-const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ globals }) => {
+const Login: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ globals }) => {
   const theaterContext = Theater.useContext();
 
   const [email, setEmail] = useState<string>('');
@@ -30,6 +32,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
 
   return (
     <Ui.Container>
+      <Head>
+        <title>Login</title>
+      </Head>
       <div className="pt-6 max-w-[400px] mx-auto">
         <div className="flex justify-center mb-4">
           <div className="w-[38px] text-gold">
@@ -95,4 +100,4 @@ export const getStaticProps = async () => {
   };
 };
 
-export default Home;
+export default Login;

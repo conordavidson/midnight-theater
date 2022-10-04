@@ -1,5 +1,6 @@
 import type { NextPage, InferGetStaticPropsType } from 'next';
-import { useState } from 'react';
+
+import Head from 'next/head';
 
 import * as Theater from 'lib/theater';
 import * as Ui from 'lib/ui';
@@ -22,6 +23,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
 
   return (
     <div>
+      <Head>
+        <title>Midnight Theater</title>
+      </Head>
       <Ui.Container>
         <div className="flex justify-between pb-3">
           <form className="border border-solid border-mud">
