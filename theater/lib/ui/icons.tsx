@@ -91,3 +91,15 @@ export const X = () => (
     <path fill="none" strokeWidth="2" d="M3,3 L21,21 M3,21 L21,3"></path>
   </svg>
 );
+
+export const DownArrow = () => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 69 41"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M4 4L34.5 34.5L65 4" stroke="currentColor" strokeWidth="8" />
+  </svg>
+);

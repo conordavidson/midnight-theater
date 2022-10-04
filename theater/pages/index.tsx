@@ -23,10 +23,10 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
   return (
     <div>
       <Ui.Container>
-        <div className="flex justify-between pb-2">
+        <div className="flex justify-between pb-3">
           <form className="border border-solid border-mud">
             <div className="flex">
-              <div className="flex-1 min-w-[190px] border-r border-solid border-mud">
+              <div className="flex-1 min-w-[180px] border-r border-solid border-mud">
                 <Ui.MenuSelect
                   id="era"
                   name="era"
@@ -45,7 +45,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
                   ]}
                 />
               </div>
-              <div className="flex-1 min-w-[190px]">
+              <div className="flex-1 min-w-[220px]">
                 <Ui.MenuSelect
                   id="genre"
                   name="genre"
@@ -142,9 +142,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ global
                   }
                   className={Utils.cx([
                     {
-                      'bg-midnight text-gold':
+                      '!bg-midnight !text-gold':
                         theaterContext.account.unsaveMovieStatus.status === 'PENDING',
-                      'bg-gold text-midnight':
+                      '!bg-gold !text-midnight':
                         theaterContext.movies.currentMovie.movie.is_saved ||
                         theaterContext.account.saveMovieStatus.status === 'PENDING',
                     },

@@ -94,15 +94,18 @@ type MenuSelectProps<TOption> = {
 export const MenuSelect = <TOption,>(props: PropsWithChildren<MenuSelectProps<TOption>>) => {
   return (
     <div className="h-full relative group">
-      <label htmlFor={props.id} className="block absolute top-2 left-4">
+      <label htmlFor={props.id} className="block absolute top-3 left-3">
         <Text.Eyebrow className="group-hover:text-midnight transition-colors">
           {props.label}
         </Text.Eyebrow>
       </label>
+      <div className="w-4 absolute flex top-0 bottom-0 right-3 items-center text-gold group-hover:text-midnight transition-colors">
+        <IconsUi.DownArrow />
+      </div>
       <select
         id={props.id}
         name={props.name}
-        className="h-full pt-7 pb-3 pl-3 pr-3 text-xl font-light bg-midnight text-gold w-full group-hover:bg-gold group-hover:text-midnight transition-colors cursor-pointer"
+        className="appearance-none rounded-none h-full pt-8 pb-3 pl-3 pr-3 text-xl font-light bg-midnight text-gold w-full group-hover:bg-gold group-hover:text-midnight transition-colors cursor-pointer"
         // @ts-ignore
         value={props.value}
         onChange={(event) => {
